@@ -1,0 +1,39 @@
+#include <stdio.h>
+
+int main() {
+    int partitions[] = {300, 600, 350, 200, 750, 125};
+    int num_partitions = sizeof(partitions) / sizeof(partitions[0]);
+    int processes[] = {115, 500, 358, 200, 375};
+    int num_processes = sizeof(processes) / sizeof(processes[0]);
+    int allocation[num_processes];
+    int i, j;
+
+    for (i = 0; i < num_processes; i++) {
+        int best_fit = -1;
+        for (j = 0; j < num_partitions; j++) {
+            if (partitions[j] >= processes[i]) {
+                if (best_fit == -1 || partitions[j] < partitions[best_fit]) {
+                    best_fit = j;
+                }
+            }
+        }
+        if (best_fit != -1) {
+            allocation[i] = partitions[best_fit];
+            partitions[best_fit] -= processes[i];
+        } else {
+            allocation[i] = 0;
+        }
+    }
+
+    printf("Process No.\tProcess Size\tPartition Size\tFragment\n");
+    for (i = 0; i < num_processes; i++) {
+        printf("%d\t\t%d\t\t", i+1, processes[i]);
+        if (allocation[i] != 0) {
+            printf("%d\t\t%d\n", allocation[i], partitions[allocation[i]]);
+        } else {
+            printf("Not Allocated\n");
+        }
+    }
+
+    return 0;
+}
