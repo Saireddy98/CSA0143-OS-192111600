@@ -16,16 +16,16 @@ int main() {
         }
     }
 
-    // Initialize the finish array to false
+   
     int finish[N_PROCESSES] = {0};
 
-    // Initialize the work array to the available resources
+    
     int work[N_RESOURCES];
     for (int i = 0; i < N_RESOURCES; i++) {
         work[i] = available[i];
     }
 
-    // Find a process that can be completed
+   
     int found = 1;
     while (found) {
         found = 0;
@@ -49,7 +49,7 @@ int main() {
         }
     }
 
-    // Check if all processes have finished
+    
     int deadlock = 0;
     for (int i = 0; i < N_PROCESSES; i++) {
         if (!finish[i]) {
