@@ -1,0 +1,78 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct process {
+    char pid[3];
+    int arrival_time;
+    int burst_time;
+    int remaining_time;
+    int start_time;
+    int finish_time;
+    int waiting_time;
+} Process;
+
+void SRPT_scheduling(Process *processes, int n) {
+    int current_time = 0;
+    int completed = 0;
+    Process *queue[n];
+    int front = 0, rear = -1;
+    int total_waiting_time = 0, total_turnaround_time = 0;
+
+    while (completed != n) {
+        for (int i = 0; i < n; i++) {
+            if (processes[i].arrival_time <= current_time && processes[i].remaining_time != 0) {
+                queue[++rear] = &processes[i];
+            }
+        }
+
+        if (front > rear) {
+            current_time++;
+            continue;
+        }
+
+        int shortest_index = front;
+        for (int i = front + 1; i <= rear; i++) {
+            if (queue[i]->remaining_time < queue[shortest_index]->remaining_time) {
+                shortest_index = i;
+            }
+        }
+
+        if (queue[shortest_index]->start_time == -1) {
+            queue[shortest_index]->start_time = current_time;
+        }
+
+        queue[shortest_index]->remaining_time--;
+
+        if (queue[shortest_index]->remaining_time == 0) {
+            queue[shortest_index]->finish_time = current_time + 1;
+            queue[shortest_index]->waiting_time = queue[shortest_index]->finish_time - queue[shortest_index]->arrival_time - queue[shortest_index]->burst_time;
+            total_waiting_time += queue[shortest_index]->waiting_time;
+            total_turnaround_time += queue[shortest_index]->finish_time - queue[shortest_index]->arrival_time;
+            completed++;
+            front++;
+        }
+
+        current_time++;
+    }
+
+    double avg_waiting_time = (double) total_waiting_time / n;
+    double avg_turnaround_time = (double) total_turnaround_time / n;
+
+    printf("Average waiting time: %.2f ms\n", avg_waiting_time);
+    printf("Average turnaround time: %.2f ms\n", avg_turnaround_time);
+}
+
+int main() {
+    Process processes[] = {
+        {"P1", 0, 5, 5, -1, -1, 0},
+        {"P2", 1, 3, 3, -1, -1, 0},
+        {"P3", 2, 3, 3, -1, -1, 0},
+        {"P4", 4, 1, 1, -1, -1, 0}
+    };
+
+    int n = sizeof(processes) / sizeof(Process);
+
+    SRPT_scheduling(processes, n);
+
+    return 0;
+}
